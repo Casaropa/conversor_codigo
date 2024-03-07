@@ -1,0 +1,14 @@
+{
+    "tasks": {
+        "start":"deno run --allow-read --allow-net --allow-write --allow-sys index.ts"
+    },
+    "imports": {
+        "std/io": "https://deno.land/std@0.212.0/io/mod.ts",
+        "std/mysql": "https://deno.land/x/mysql/mod.ts",
+        "std/args": "https://deno.land/x/deno_minimist@v1.0.2/mod.ts",
+        "table": "https://deno.land/x/minitable@v1.0/mod.ts",
+        "excel": "https://deno.land/x/sheetjs@v0.18.3/xlsx.mjs",
+        "fs": "https://deno.land/std@0.213.0/fs/mod.ts",
+        "cptable":"https://deno.land/x/sheetjs@v0.18.3/dist/cpexcel.full.mjs"
+    }
+}
