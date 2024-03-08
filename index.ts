@@ -215,17 +215,11 @@ async function main() {
     
   }
   if(arg.test){
-    const filename = `./test/Conversor.xlsx` ;
+    const filename = `./test/bbdd2.xlsx` ;
     const splited = readFile(filename)
-    const sliced = splited.slice(2, splited.length - 2 )
-    let list:string[][] = []
-    for(const art of sliced){
-      const splited = art.split(",")
-      splited.shift()
-      list = [...list, splited]
-    }
-    const cleandList = exitList(list)
-    console.log(cleandList)
+    const list = ArrayList(splited)
+    console.log(splited);
+    
   }
 }
 main()
