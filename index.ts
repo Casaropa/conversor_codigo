@@ -3,8 +3,8 @@ import parseArgs from "std/args";
 import { emptyDir } from "fs"
 import { cleanList } from "./utIls/cleanList.ts";
 import { filterRoutes } from "./utIls/filters.ts";
-import { readFile, readFileAndSplited, writeFile } from "./utIls/excelFiles.ts";
-import { ArrayList, ArrayList2 } from "./utIls/ArrayList.ts";
+import { readFile, writeFile } from "./utIls/excelFiles.ts";
+import { ArrayList } from "./utIls/ArrayList.ts";
 import { cleanXLSX } from "./utIls/prepareXLSX.ts"
 import {
   AllDepart,
@@ -66,13 +66,12 @@ async function main() {
       console.error('usage: sheet2csv <filename> [sheetname]');
       Deno.exit(1);
     }
-    const splited = readFileAndSplited(filename)
+    const splited = readFile(filename)
     const list = ArrayList(splited)
-  //  const lista = ArrayList2(splited)
+   const cleanedList = cleanList(list)
     
     if(arg.dep){
-      const routeList = cleanList(list)
-      const routes = routeList.map((dep:listArt):string => dep.route)
+      const routes = cleanedList.map((dep:listArt):string => dep.route)
       
       const filteredRoute = filterRoutes(routes)
       for( const nomDep of filteredRoute){
@@ -85,9 +84,8 @@ async function main() {
       }
     }
     if(arg.art){
-      const artList:listArt[] = cleanList(list);
       console.time()
-      for(const Art of artList){
+      for(const Art of cleanedList){
         try{
           console.log(await insertArt(Art))
         }catch(err){
@@ -106,9 +104,6 @@ async function main() {
     }
     console.time()
     await emptyDir("./entrada")
-    // const splited = readFileAndSplited(filename)
-    // const list = exitList(splited)
-    // const listProd = list.slice(1,list.length)
     const splited = readFile(filename)
     const inicial = arg.manual ? 1 : 2
     const final = arg.manual ? 1 : 2
@@ -215,11 +210,7 @@ async function main() {
     
   }
   if(arg.test){
-    const filename = `./test/bbdd2.xlsx` ;
-    const splited = readFile(filename)
-    const list = ArrayList2(splited)
-    console.log(list);
-    
+    console.log("test")
   }
 }
 main()

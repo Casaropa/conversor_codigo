@@ -23,7 +23,7 @@ export const searchMAX = (type:string) => client.query(`SELECT MAX(articulos.cod
 // Seach by code
 export const searchDepByCode = (code:string) => client.query(`SELECT id_departamento, nombre_depart, codigo_dep FROM departamentos WHERE codigo LIKE ?`, [code])
 
-export const searchArtByCode = (code:string) => client.query(`SELECT id_articulo FROM articulos WHERE codigo_interno LIKE ?`, [code])
+export const searchArtByCode = (code:string) => client.query(`SELECT id_articulo FROM articulos WHERE codigo_art LIKE ?`, [code])
 
 // Search by Id
 export const searchDepById = (code:string) => client.query(`SELECT id_departamento, nombre_depart, codigo_dep FROM departamentos WHERE codigo LIKE ${code}`)
@@ -68,7 +68,7 @@ export const insertArt = async (Art:listArt) => {
   if(!depart[0]) return `Departamento "${route}" no Existe`
   
   const idDepartamento = depart[0]?.id_departamento
-  const isDuplicated = code === "NC" ? await searchArtByRouteAndPrice(route, prc) : await searchArtByCode(localCode)
+  const isDuplicated = code === "NC" ? await searchNC (route, String(prc), size) : await searchArtByCode(code)
   if(isDuplicated[0])  return `Articulo ${isDuplicated[0].id_articulo} ya existente`
   //const res = depart
 
