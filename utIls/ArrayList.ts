@@ -27,13 +27,17 @@ export const ArrayList = (splited:string[]) => {
     return list
 }
 
-export const ArrayList2 = (splited:string[]) => {
-  const objectList = splited.map((value:string) => value.split(","))
+export const ArrayList2 = (listArt:string[]) => {
+  listArt.shift()
+  const objectList = listArt.map((value:string) => value.split(","))
   const list = objectList.reduce((acc:string[][], el:string[]) =>{
-    if(el[1] == '') el[1] = 'NC'
-    if(el[2]) el[2] = (el[2]+'\\').toLowerCase()
+    const localCode = el[0]
+    const code = !el[1] ? 'NC' : el[1]
+    //const splited = el[2].split("\\")
+    const route = el[2]?.includes('Hogar') || el[2]?.includes('Accesorios') ? el[2]+'\\' : "la"
     
-    return acc = [...acc, el]
+    
+    return acc = [...acc, [localCode,code, route]]
   },[])
   
   return list

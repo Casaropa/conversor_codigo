@@ -4,7 +4,7 @@ import { emptyDir } from "fs"
 import { cleanList } from "./utIls/cleanList.ts";
 import { filterRoutes } from "./utIls/filters.ts";
 import { readFile, readFileAndSplited, writeFile } from "./utIls/excelFiles.ts";
-import { ArrayList, /*ArrayList2*/ } from "./utIls/ArrayList.ts";
+import { ArrayList, ArrayList2 } from "./utIls/ArrayList.ts";
 import { cleanXLSX } from "./utIls/prepareXLSX.ts"
 import {
   AllDepart,
@@ -217,8 +217,8 @@ async function main() {
   if(arg.test){
     const filename = `./test/bbdd2.xlsx` ;
     const splited = readFile(filename)
-    const list = ArrayList(splited)
-    console.log(splited);
+    const list = ArrayList2(splited)
+    console.log(list);
     
   }
 }
