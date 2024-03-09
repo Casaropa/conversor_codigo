@@ -4,12 +4,6 @@ import { upperR } from "./prepareXLSX.ts"
 
 XLSX.set_cptable(cptable)
 
-export const readFileAndSplited = (filename:string) => {
-    const workbook = XLSX.readFile(filename);
-    const sheetname = workbook.SheetNames[0];
-    return XLSX.utils.sheet_to_csv(workbook.Sheets[sheetname]).split(",")
-}
-
 export const readFile = (filename:string) => {
   const workbook = XLSX.readFile(filename);
   const sheetname = workbook.SheetNames[0];
