@@ -122,9 +122,14 @@ async function main() {
     for( const row of listProd ){
       if(row[0] !== 'NC'){
         b = await searchArtInfo(row[0])
+        if(b.length > 1){
+          const c = b.reduce((acc:number, el:{codigo_interno:string}) => Number(el.codigo_interno) > acc ?
+            acc = Number(el.codigo_interno) : acc , 0)
+          b = c
+        }
         bardCode = row[0]
       }else{
-        b = await searchNC(row[3],row[2], row[4])
+        b = await searchNC(row[3],Number(row[2]), row[4])
         bardCode = b[0]?.codigo_interno
       }
       const cant = row[1]
