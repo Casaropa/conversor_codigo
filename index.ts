@@ -115,49 +115,55 @@ async function main() {
     let a:string[][] = []
     let b
     let bardCode
+    
+    console.log(listProd);
     for( const row of listProd ){
-      if(row[0] !== 'NC'){
-        b = await searchArtInfo(row[0])
-        if(b.length > 1){
-          const c = b.reduce((acc:number, el:{codigo_interno:string}) => Number(el.codigo_interno) > acc ?
-            acc = Number(el.codigo_interno) : acc , 0)
-          b = c
-        }
-        bardCode = row[0]
-      }else{
-        b = await searchNC(row[3],Number(row[2]), row[4])
-        bardCode = b[0]?.codigo_interno
-      }
-      const cant = row[1]
-      if(!b[0]){
+      try{
         const code = row[0]
-        const ruta = row[3]?.replace(/\\/ig, "\\\\")
+        const cant = row[1]
         const precio = row[2]
+        const ruta:string = row[3].replace(/\\/ig, "\\\\")
         const talla = row[4]
-        const newArt = {code,ruta,precio,talla}
-        
-        const res = await Createcode(newArt)
-        const route = cleanR(res[0]?.talla, res[0]?.ruta)
-        const p = res[0]?.precio
-        const splitedP = p.split(".")
-        const price = splitedP[1] === "0" ?
+        if(row[0] !== 'NC'){
+          b = await searchArtInfo(row[0])
+          if(b.length > 1){
+            const c = b.reduce((acc:number, el:{codigo_interno:string}) => Number(el.codigo_interno) > acc ?
+              acc = Number(el.codigo_interno) : acc , 0)
+            b = c
+          }
+          bardCode = row[0]
+        }else{
+          b = await searchNC( ruta ,Number(row[2]), row[4])
+          bardCode = b[0]?.codigo_interno
+        }
+        if(!b[0]){
+          const newArt = {code,ruta,precio,talla}
+          const res = await Createcode(newArt)
+          const route = cleanR(res[0]?.talla, res[0]?.ruta)
+          const p = res[0]?.precio
+          
+          const splitedP = p.split(".")
+          const price = splitedP[1] === "0" ?
+            splitedP[0] :
+            p.replace(".", ",")
+          a = [...a, [res[0]?.codigo_interno, code, cant, route, price]]
+        }else{
+          const route = cleanR(b[0]?.talla, b[0]?.ruta)
+          const p = b[0]?.precio
+          const splitedP = p.split(".")
+          const price = splitedP[1] === "0" ?
           splitedP[0] :
           p.replace(".", ",")
-        a = [...a, [res[0]?.codigo_interno, code, cant, route, price]]
-      }else{
-        const route = cleanR(b[0]?.talla, b[0]?.ruta)
-        const p = b[0]?.precio
-        const splitedP = p.split(".")
-        const price = splitedP[1] === "0" ?
-        splitedP[0] :
-        p.replace(".", ",")
-        a = [...a, [b[0]?.codigo_interno, bardCode, cant, route, price]]
+          a = [...a, [b[0]?.codigo_interno, bardCode, cant, route, price]]
+        }
+      }catch(err){
+        console.error(err.message);
       }
     }
-   const header = ["articulo","codigo", "cant", "ruta", "precio"]
+   const header = ["ARTICULO","CODIGO", "CANT", "RUTA", "PRECIO"]
     a.unshift(header)
   //  console.log(listProd);
-   await writeFile(a,'adsm')
+   await writeFile(a,'ADSM')
     console.timeEnd()
   }
   if(arg.salida){
@@ -176,7 +182,7 @@ async function main() {
       }
     }
     xlsx.unshift(["Articulo", "Codigo", "Ruta", "Precio"])
-    writeFile(xlsx,"salida")
+    writeFile(xlsx,"SALIDA_ENVIOS")
     console.timeEnd()
   }
   if(arg.cambiar){

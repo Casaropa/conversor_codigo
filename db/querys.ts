@@ -68,8 +68,9 @@ export const insertArt = async (Art:listArt) => {
   if(!depart[0]) return `Departamento "${route}" no Existe`
   
   const idDepartamento = depart[0]?.id_departamento
-  const isDuplicated = code === "NC" ? await searchNC (route, prc, size) : await searchArtByCode(code)
-  if(isDuplicated[0])  return `Articulo ${isDuplicated[0].id_articulo} ya existente`
+  if(type === 'Caja'){
+    const isDuplicated = code === "NC" ? await searchNC (route, prc, size) : await searchArtByCode(code)
+    if(isDuplicated[0])  return `Articulo ${isDuplicated[0].id_articulo} ya existente`}
   //const res = depart
 
   const res = await insertArtRow(code, localCode, name, prc, size, type, idDepartamento)

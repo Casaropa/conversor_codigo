@@ -159,7 +159,7 @@ export const createNC = (art) =>{
   
   
 export async function Createcode(art){
-    const route = art.ruta.toLowerCase()
+    const route = art.ruta
     const code = art.code
     const price = art.precio
 
@@ -176,6 +176,7 @@ export async function Createcode(art){
        route.replace(/\\\\/ig," ") :
        route.replace(/\\\\/ig," ")  + size
       const res = await insertArt({ code, localCode:newLocalCode, name,prc:price, size, type, route} )
+      console.log(res)
       const lastIndex = res.lastInsertId
       return searchArtById(lastIndex)
     }else{
