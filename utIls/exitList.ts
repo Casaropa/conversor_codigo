@@ -1,7 +1,6 @@
 export const exitList = (elemsList:string[][]) =>{
   let list: (string|null)[][] = []
   for( const value of elemsList) {
-    console.log(value)
     const code = !value[0] ? "NC" : value[0]
     const amount = !value[1] ? "1" : value[1]
     const price = !value[2] ? "0" : value[2]    
@@ -15,6 +14,7 @@ export const exitList = (elemsList:string[][]) =>{
       const splited = wihtoutCode.split("\\")
       const size = wihtoutCode.includes('zapatos') ?
       splited[3].replace("t","") :
+      wihtoutCode.includes('nin') ?  splited[2] :
       splited[2].replace("talla ","")
       
       splited.pop()

@@ -10,5 +10,6 @@
         "excel": "https://deno.land/x/sheetjs@v0.18.3/xlsx.mjs",
         "fs": "https://deno.land/std@0.213.0/fs/mod.ts",
         "cptable":"https://deno.land/x/sheetjs@v0.18.3/dist/cpexcel.full.mjs"
-    }
+    },
+    "version": "1.0.0"
 }

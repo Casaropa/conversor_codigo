@@ -61,11 +61,7 @@ async function main() {
   if (arg.remove) await emptyDir(arg.ruta)
 
   if (arg.leer) {
-    const filename =  `./test/${arg.ruta}.xlsx`;
-    if (!arg.ruta) {
-      console.error('usage: sheet2csv <filename> [sheetname]');
-      Deno.exit(1);
-    }
+    const filename =  `./test/bbdd.xlsx`;
     const splited = readFile(filename)
     const list = ArrayList(splited)
    const cleanedList = cleanList(list)
@@ -135,7 +131,7 @@ async function main() {
       const cant = row[1]
       if(!b[0]){
         const code = row[0]
-        const ruta = row[3]
+        const ruta = row[3]?.replace(/\\/ig, "\\\\")
         const precio = row[2]
         const talla = row[4]
         const newArt = {code,ruta,precio,talla}
@@ -165,11 +161,7 @@ async function main() {
     console.timeEnd()
   }
   if(arg.salida){
-    const filename = `./test/${arg.ruta}.xlsx` ;
-    if (!filename) {
-      console.error('usage: sheet2csv <filename> [sheetname]');
-      Deno.exit(1);
-    }
+    const filename = `./test/salida.xlsx`
     await emptyDir("./entrada")
     const splited = readFile(filename)
     const list = splited.slice(1, splited.length -1 )
@@ -188,11 +180,7 @@ async function main() {
     console.timeEnd()
   }
   if(arg.cambiar){
-    const filename = `./test/${arg.ruta}.xlsx` ;
-    if (!filename) {
-      console.error('usage: sheet2csv <filename> [sheetname]');
-      Deno.exit(1);
-    }
+    const filename = `./test/precio.xlsx` ;
     const splited = readFile(filename)
     const list = splited.slice(1, splited.length -1 )
     let cleandList = Array(0)

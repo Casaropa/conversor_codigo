@@ -1,4 +1,4 @@
-import { searchArtById } from "./db/querys.ts";
+import { insertArt, searchArtById } from "./db/querys.ts";
 import { searchDepByRoute, insertArtRow, searchMAX } from "./db/querys.ts"
 
 const Beginer = (art) =>{
@@ -159,7 +159,7 @@ export const createNC = (art) =>{
   
   
 export async function Createcode(art){
-    const route = art.ruta.replace(/\\/ig,"\\\\").toLowerCase()
+    const route = art.ruta.toLowerCase()
     const code = art.code
     const price = art.precio
 
@@ -172,12 +172,10 @@ export async function Createcode(art){
       const max = await searchMAX(type)
       const newLocalCode = String(Number(max[0].max) + 1)
       const size = art.talla
-      const dep = await searchDepByRoute(route)
-      const idDepart = dep[0]?.id_departamento
       const name = route.includes('hogar') || route.includes('accesorios') ?
        route.replace(/\\\\/ig," ") :
        route.replace(/\\\\/ig," ")  + size
-      const res = await insertArtRow( code, newLocalCode, name, price, size, type, idDepart )
+      const res = await insertArt({ code, localCode:newLocalCode, name,prc:price, size, type, route} )
       const lastIndex = res.lastInsertId
       return searchArtById(lastIndex)
     }else{
