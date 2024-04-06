@@ -31,6 +31,7 @@ export function cleanR(size:string|null = 'u', dep:string){
   if(dep.includes('hogar')) return d.slice(0,d.length - 1)
   if(dep.includes('accesorios')) return d.slice(0,d.length - 1)
   if(dep.includes('zapato')) return d+'T'+s
+  if(dep.includes('nin')) return d+s
   return d+'Talla '+s
 }
 

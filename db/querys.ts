@@ -8,7 +8,8 @@ interface listArt{
   route:string, 
   type:string, 
   size:string|null, 
-  name:string
+  name:string,
+  lote:number|null
 }
 
 // ALL
@@ -23,7 +24,7 @@ export const searchMAX = (type:string) => client.query(`SELECT MAX(articulos.cod
 // Seach by code
 export const searchDepByCode = (code:string) => client.query(`SELECT id_departamento, nombre_depart, codigo_dep FROM departamentos WHERE codigo LIKE ?`, [code])
 
-export const searchArtByCode = (code:string) => client.query(`SELECT id_articulo FROM articulos WHERE codigo_art LIKE ?`, [code])
+export const searchArtByCode = (code:string) => client.query(`SELECT id_articulo FROM articulos WHERE codigo_interno LIKE ?`, [code])
 
 // Search by Id
 export const searchDepById = (code:string) => client.query(`SELECT id_departamento, nombre_depart, codigo_dep FROM departamentos WHERE codigo LIKE ${code}`)
@@ -47,6 +48,7 @@ export const searchNC = (route:string|null, prc:number|null, size:string|null) =
   
 
 export const searchSend = (code:string) => client.query(`SELECT articulos.codigo_interno, articulos.codigo_art, articulos.talla, articulos.precio, departamentos.nombre_depart FROM articulos JOIN departamentos ON departamentos.id_departamento = articulos.id_departamento WHERE articulos.codigo_interno = ?`, [code])
+export const searchAll = () => client.query(`SELECT articulos.codigo_interno, articulos.codigo_art, articulos.talla, articulos.precio, departamentos.nombre_depart FROM articulos JOIN departamentos ON departamentos.id_departamento = articulos.id_departamento`)
 
 export const insertDepRow = (nomDep:string,codigo:string) => client.query(`INSERT INTO departamentos(nombre_depart, codigo_dep) VALUES(?,?)`, [nomDep,codigo]) 
 
@@ -60,26 +62,26 @@ export const insertDepart = async (nomDep:string) =>{
   return res
 }
 
-export const insertArtRow = (code:string, localCode:string, name:string, price:number, size:string|null, type:string, idDep:number) => client.execute(`INSERT INTO articulos(codigo_art, codigo_interno, nombre, precio, talla, tipo, id_departamento) VALUES (?,?,?,?,?,?,?)`, [code, localCode,name, price, size, type, idDep]) 
+export const insertArtRow = (code:string, localCode:string, name:string, price:number, size:string|null, type:string, idDep:number, idLote:number|null) => client.execute(`INSERT INTO articulos(codigo_art, codigo_interno, nombre, precio, talla, tipo, id_departamento, id_lote) VALUES (?,?,?,?,?,?,?,?)`, [code, localCode,name, price, size, type, idDep, idLote]) 
 
 export const insertArt = async (Art:listArt) => {
-  const {route, localCode, code, size, name, prc, type} = Art   
+  const {route, localCode, code, size, name, prc, type, lote } = Art   
   const depart = await searchDepByRoute(route) 
   if(!depart[0]) return `Departamento "${route}" no Existe`
   
   const idDepartamento = depart[0]?.id_departamento
   if(type === 'Caja'){
-    const isDuplicated = code === "NC" ? await searchNC (route, prc, size) : await searchArtByCode(code)
+    const isDuplicated = code === "NC" ? await searchNC (route, prc, size) : await searchArtByCode(localCode)
     if(isDuplicated[0])  return `Articulo ${isDuplicated[0].id_articulo} ya existente`}
   //const res = depart
-
-  const res = await insertArtRow(code, localCode, name, prc, size, type, idDepartamento)
+  const res = await insertArtRow(code, localCode, name, prc, size, type, idDepartamento, lote)
   return res
 }
 
 interface Art{
   code: string,
-  prc: number
+  prc: number,
+  idLote: number
 } 
 // Updates
 const updatePriceRow = (code:string, prc:number) =>  client.execute(`UPDATE articulos SET articulos.precio = ? WHERE articulos.codigo_interno LIKE ?`,[prc, code])
@@ -92,9 +94,25 @@ export async function updatePrice(art:Art) {
     nonExistentList = [...nonExistentList, code]
     throw new Error(`El articulo ${code} no existe`);
   }
-
+  
   if(product[0]?.precio == prc) throw new Error(`Precio del articulo ${product[0]?.codigo_interno} al dia`)
   const res = await updatePriceRow(code, prc)
-  return res.affectedRows === 1 ? "Precio actualizado" : `Precio del articulo ${product[0].codigo_interno} al dia`
+return res.affectedRows === 1 ? "Precio actualizado" : `Precio del articulo ${product[0].codigo_interno} al dia`
+//return nonExistentList
+}
+const updateLoteRow = (code:string, idLote:number) =>  client.execute(`UPDATE articulos SET articulos.id_lote = ? WHERE articulos.codigo_interno LIKE ?`,[Number(idLote), code])
+
+export async function addLote(art:Art) {
+  const {code, idLote} = art
+  const product = await searchSend(code)
+  let nonExistentList:string[] = []
+  if(!product[0]){ 
+    nonExistentList = [...nonExistentList, code]
+    throw new Error(`El articulo ${code} no existe`);
+  }
+
+  if(product[0]?.id_lote == idLote) throw new Error(`Precio del articulo ${product[0]?.codigo_interno} al dia`)
+  const res = await updateLoteRow(code, idLote)
+  return res.affectedRows === 1 ? "Lote actualizado" : `Lote del articulo ${product[0].codigo_interno} ya es ${idLote}`
   //return nonExistentList
 }

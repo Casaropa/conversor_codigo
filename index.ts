@@ -8,6 +8,7 @@ import { ArrayList } from "./utIls/ArrayList.ts";
 import { cleanXLSX } from "./utIls/prepareXLSX.ts"
 import {
   AllDepart,
+  addLote,
   insertArt,
   insertDepart,
   searchArtByCode,
@@ -20,6 +21,7 @@ import {
 import { exitList } from "./utIls/exitList.ts";
 import { cleanR } from "./utIls/prepareXLSX.ts";
 import { Createcode } from "./codes.ts";
+import { searchAll } from "./db/querys.ts";
 const createTable = ({list=[], columns=[""]}) => table(list, [...columns], {padding:4, upcaseHeader:true})
 
 interface listArt{
@@ -131,6 +133,7 @@ async function main() {
               acc = Number(el.codigo_interno) : acc , 0)
             b = c
           }
+          
           bardCode = row[0]
         }else{
           b = await searchNC( ruta ,Number(row[2]), row[4])
@@ -146,6 +149,11 @@ async function main() {
           const price = splitedP[1] === "0" ?
             splitedP[0] :
             p.replace(".", ",")
+            if(arg.con){
+              b[0].precio = precio
+              const art = {code:String(res[0]?.codigo_interno) , prc:Number(precio)}
+              await updatePrice(art)
+            }
           a = [...a, [res[0]?.codigo_interno, code, cant, route, price]]
         }else{
           const route = cleanR(b[0]?.talla, b[0]?.ruta)
@@ -208,8 +216,42 @@ async function main() {
     //console.log(nonExistentList);
     
   }
+  if(arg.lotes){
+    const filename = `./test/lotes.xlsx` ;
+    const splited = readFile(filename)
+    const list = splited.slice(1, splited.length -1 )
+    let cleandList = Array(0)
+    for(const art of list){
+      const spl:(string|number)[] = art.split(',')
+      spl[1] = Number(spl[1])
+      cleandList = [...cleandList, {code:spl[0], idLote:spl[1]}]
+    }
+    //let nonExistentList:string[] = []
+    for(const art of cleandList){
+      try {
+        const res = await addLote(art)
+        //if(res[0]) nonExistentList = [...nonExistentList, art.code]
+        console.log(res)
+      } catch (error) {
+        console.error(error.message)
+      }
+    }
+    //console.log(nonExistentList);
+    
+  }
   if(arg.test){
-    console.log("test")
+    await emptyDir("./entrada")
+    const list = await searchAll()
+    let xlsx:string[][] = []
+    for(const elem of list){
+      const code = elem.codigo_interno
+      xlsx = [...xlsx,cleanXLSX(elem, code)]
+    }
+    xlsx.unshift(["Articulo", "Codigo", "Ruta", "Precio"])
+    writeFile(xlsx,"SALIDA_ENVIOS")
+    console.log(xlsx);
+    console.timeEnd()
+  
   }
 }
 main()

@@ -7,14 +7,23 @@ interface listArt{
     route:string, 
     type:string, 
     size:string|null, 
-    name:string
+    name:string,
+    lote:number|null
   }
   
+export function notacionCientifica(elem:string){
+  const notacion = /^\d+(\.\d+)?[eE][+-]?\d+$/.test(elem)
+  if(!notacion) return elem
+  const numeroNotacionCientifica = Number(elem)
+  const natureNumber = parseFloat(numeroNotacionCientifica.toExponential())
+  return String(natureNumber)
+}
+
 export const cleanList = (list:string[][]) => {
   let reducedList:listArt[] = []
   for(const elem of list ) {
     if(!elem[0]) continue
-    const code = elem[1] ? elem[1] : 'NC' 
+    const code = elem[1] ? notacionCientifica(elem[1]) : 'NC' 
     const types = {
       "1": "Producto",
       "2": "Caja",
@@ -35,7 +44,8 @@ export const cleanList = (list:string[][]) => {
     const index = localCode.slice(0,1)
     const type:string = types[index] || "NC"
     const prc = elem[3] ? Number(elem[3]) : 0
-    const newElem:listArt = {localCode, code, prc, route, type, size, name}
+    const lote = !elem[4] ? null : Number(elem[4])
+    const newElem:listArt = {localCode, code, prc, route, type, size, name, lote}
     reducedList = [...reducedList, newElem]; 
   }
   

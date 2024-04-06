@@ -17,7 +17,7 @@ export const writeFile = async (list:string[][],file:string) => {
     SheetNames: ["Sheet1"],
     Sheets: {
       Sheet1: {
-        "!ref": `A1:${maxCollum}50000`,
+        "!ref": `A1:${maxCollum}70000`,
         ...list.reduce((acc, row, index) => {
           row.forEach((cell, cellIndex) => {
             const cellAddress:string = String.fromCharCode(65 + cellIndex) + (index + 1);

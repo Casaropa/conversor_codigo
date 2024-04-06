@@ -6,7 +6,8 @@ export const ArrayList = (listArt:string[]) => {
     const code = !el[1] ? 'NC' : el[1]
     const route = el[2]?.toLowerCase()
     const price = el[3]
-    return acc = [...acc, [localCode,code, route, price]]
+    const lote = el[4] === "0" ? el[4] : ""
+    return acc = [...acc, [localCode,code, route, price, lote]]
   },[])
   
   return list
